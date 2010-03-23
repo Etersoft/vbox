@@ -1,0 +1,122 @@
+#!/bin/bash
+#
+# VirtualBox machines server script
+#
+#####
+
+# chkconfig: 235 98 55
+# description: VirtualBox machines auto start
+#
+### BEGIN INIT INFO
+# Provides:       vboxdrv
+# Required-Start: $syslog
+# Required-Stop:
+# Default-Start:  2 3 4 5
+# Default-Stop:   0 1 6
+# Short-Description: VirtualBox machines auto start
+### END INIT INFO
+
+WITHOUT_RC_COMPAT="1"
+. /etc/rc.d/init.d/functions
+
+
+#####
+. /etc/sysconfig/vbox/vboxmachines.conf
+
+
+#####
+get_vm_name_by_uuid()
+{
+	su "$VBOX_USER" -l -c "VBoxManage --nologo showvminfo \"$1\"" | grep 'Name:' | sed -e 's/^Name:\s*//g'
+}
+
+get_necessary_vms_uuids_list()
+{
+	su "$VBOX_USER" -l -c "cat \"$VBOX_MACHINES_LIST\"" | sort
+}
+
+get_running_vms_uuids_list()
+{
+	su "$VBOX_USER" -l -c "VBoxManage --nologo list runningvms | grep -o \{.*\}" | sed -e 's/{\(.*\)}/\1/' | sort
+}
+
+###
+start_vm_by_uuid()
+{
+	echo "Starting \""`get_vm_name_by_uuid "$1"`"\" - $1 ..."
+	su "$VBOX_USER" -l -c "VBoxManage --nologo startvm \"$1\" --type headless"
+}
+
+stop_vm_by_uuid()
+{
+	echo -n "Stopping \""`get_vm_name_by_uuid "$vm_uuid"`"\" - $vm_uuid "
+	su "$VBOX_USER" -l -c "VBoxManage --nologo controlvm \"$1\" \"$VBOX_SHUTDOWN_ACTION\""
+
+	wait_count="0"
+	while [ ! -z `get_running_vms_uuids_list | grep "$vm_uuid"` ]; do
+		echo -n "."
+		sleep 1
+
+		let "wait_count+=1"
+		if [ $wait_count -gt "$VBOX_SHUTDOWN_TIMEOUT" ]; then
+			su "$VBOX_USER" -l -c "VBoxManage --nologo controlvm \"$1\" savestate"
+			break
+		fi
+	done
+	[ "$wait_count" -ne "0" ] && echo
+}
+
+#####
+start_necessary_vms()
+{
+	retcode="0"
+	get_necessary_vms_uuids_list | while read vm_uuid; do
+		start_vm_by_uuid "$vm_uuid"
+		[ "$?" -ne "0" ] && retcode="1"
+	done
+	return "$retcode"
+}
+
+stop_necessary_vms()
+{
+	retcode="0"
+	get_necessary_vms_uuids_list | while read vm_uuid; do
+		stop_vm_by_uuid "$vm_uuid"
+		[ "$?" -ne "0" ] && retcode="1"
+	done
+	return "$retcode"
+}
+
+restart_necessary_vms()
+{
+	stop_necessary_vms
+	start_necessary_vms
+}
+
+status_necessary_vms()
+{
+	running_vms_uuids_list=`get_running_vms_uuids_list`
+	necessary_vms_uuids_list=`get_necessary_vms_uuids_list`
+
+	echo "$necessary_vms_uuids_list" | while read vm_uuid; do
+		if [ -z `echo "$running_vms_uuids_list" | grep "$vm_uuid"` ]; then
+			echo "[   ---   ] :: \""`get_vm_name_by_uuid "$vm_uuid"`"\" - $vm_uuid"
+		else
+			echo "[ RUNNING ] :: \""`get_vm_name_by_uuid "$vm_uuid"`"\" - $vm_uuid"
+		fi
+	done
+}
+
+
+#####
+case "$1" in
+	"start") start_necessary_vms;;
+	"stop") stop_necessary_vms;;
+	"restart") restart_necessary_vms;;
+	"status") status_necessary_vms;;
+	*) msg_usage "${0##*/} {start|stop|restart|status}"
+	exit 1
+esac
+
+exit "$?"
+

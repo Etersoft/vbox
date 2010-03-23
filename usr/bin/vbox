@@ -1,0 +1,166 @@
+#!/bin/bash
+
+#####
+check_display()
+{
+	xset -b
+}
+
+
+#####
+xfatal()
+{
+	check_display || fatal "$@"
+	xmessage -center "$@" || fatal "$@"
+	exit 1
+}
+
+fatal()
+{
+	echo "$@"
+	exit 1
+}
+
+
+#####
+if [ "$UID" == "0" ]; then
+	xfatal "Do not run \"vbox\" from a \"root\" account!"
+fi
+
+if ! ssh-add -l > /dev/null; then
+	xfatal "Missing ssh key. Run \"ssh-add\", plz ;-)"
+fi
+
+
+#####
+init_environment()
+{
+	[ -n "$VBOX_HOST" ] || VBOX_HOST="virtualbox"
+	[ -n "$VBOX_SSH_PORT" ] || VBOX_SSH_PORT="22"
+
+	local config_dir="$XDG_CONFIG_HOME"
+	[ -d "$config_dir" ] || config_dir="$HOME/.config"
+	if [ ! -e $config_dir/vbox.conf ]; then
+		echo "Copying default vbox configuration from server..."
+		scp -P "$VBOX_SSH_PORT" "$VBOX_HOST":/etc/sysconfig/vbox/vbox.conf "$config_dir"/vbox.conf
+	fi
+	. "$config_dir"/vbox
+
+	local nxclient_config="$HOME/.nx/config/"`basename "$VBOX_NXCLIENT_CONFIG"`
+	if [ ! -e "$nxclient_config" ]; then
+		echo "Copying default nxclient configuration from server..."
+		mkdir -p `dirname "$nxclient_config"`
+		scp -P "$VBOX_SSH_PORT" "$VBOX_HOST":"$VBOX_NXCLIENT_CONFIG" "$nxclient_config"
+	fi
+}
+
+
+#####
+get_vms_table()
+{
+	dhcp_info=`ssh "$DHCP_HOST" -p "$DHCP_SSH_PORT" "grep \"# virtualbox systems\" \"$DHCP_CONFIG\""`
+	ssh "$VBOX_USER"@"$VBOX_HOST" -p "$VBOX_SSH_PORT" "dhcp_info=\"$dhcp_info\"
+		vms_uuids_list=\`VBoxManage --nologo list vms | grep -o '\{.*\}' | sed -e 's/{\(.*\)}/\1/'\`
+		for vms_uuids_list_item in \$vms_uuids_list; do
+			vm_info=\`VBoxManage --nologo showvminfo \"\$vms_uuids_list_item\"\`
+			vm_name=\`echo \"\$vm_info\" | grep 'Name:' | head -n 1 | sed -e 's/^Name:\s*//g'\`
+			vm_mac=\`echo \"\$vm_info\" | grep -o '[0-9A-F]\{12\}' | head -n 1 | sed -e 's/\([0-9A-F][0-9A-F]\)/\1:/g' | sed -e 's/:$//'\`
+			if [ ! -z \"\$vm_mac\" ]; then
+				vm_hostname=\`echo \"\$dhcp_info\" | grep -i \"\$vm_mac\" | awk '{print \$2}'\`
+				vm_ip=\`echo \"\$dhcp_info\" | grep -i \"\$vm_mac\" | awk '{print \$8}' | sed -e 's/;$//'\`
+			fi
+			printf \"|| %30s | %36s | %30s | %15s ||\n\" \"\$vm_name\" \"\$vms_uuids_list_item\" \"\$vm_hostname\" \"\$vm_ip\"
+		done"
+}
+
+print_vms_table()
+{
+	echo -n "Getting VirtualBox machines list at \"$VBOX_HOST\"... "
+	vms_table=`get_vms_table | sort`
+	echo -e "OK\n"
+	echo "++--------------------------------------------------------------------------------------------------------------------------++"
+	printf "|| %30s | %36s | %30s | %15s ||\n" "Machine name" "UUID" "Hostname" "IP"
+	echo "++--------------------------------------------------------------------------------------------------------------------------++"
+	echo -e "$vms_table"
+	echo "++--------------------------------------------------------------------------------------------------------------------------++"
+}
+
+
+#####
+connect_over_ssh()
+{
+	local vbox_command="$@"
+	[ -n "$vbox_command" ] || vbox_command="VirtualBox"
+
+	local x_forward="-Y"
+	check_display || x_forward=""
+
+	ssh "$x_forward" "$VBOX_COMPRESSION" "$VBOX_SSH_KEY_ONLY" "$VBOX_USER"@"$VBOX_HOST" -p "$VBOX_SSH_PORT" "$vbox_command" ||
+		xfatal "Try run in intranet \$ ssh-copy-id $VBOX_USER@$VBOX_HOST for copy ssh key."
+}
+
+connect_over_nx()
+{
+	check_display || xfatal "Can't run nx connection with broken DISPLAY variable"
+
+	local nxclient=`which "$VBOX_NXCLIENT" 2>/dev/null`
+	if [ ! -e "$nxclient" ]; then xfatal "Can't find \"$VBOX_NXCLIENT\" executable"; fi
+
+	local nxclient_config="$HOME/.nx/config/"`basename "$VBOX_NXCLIENT_CONFIG"`
+
+	"$nxclient" --session "$nxclient_config"
+}
+
+
+
+#####
+help()
+{
+	echo
+	echo -e "usage: vbox [flags] [command]"
+	echo
+	echo -e "Flags:"
+	echo -e "\t--ssh - Enables SSH protocol for X11 windows"
+	echo -e "\t--nx - Enables NX protocol for X11 windows"
+	echo
+	echo -e "Commands:"
+	echo -e "\t-h, --help, help - Print this help (Surprise! ^_^)"
+	echo -e "\t-l, --list, list - Print list of virtual machines with detailed info"
+	echo -e "\t-s <VM>, --start <VM>, start <VM> - Run <VM> (UUID or name) with headless mode"
+	echo -e "\t-t <VM>, --stop <VM>, stop <VM> - Halt <VM>"
+	echo -e "\t-p <VM>, --sleep <VM>, sleep <VM> - Save state of <VM>"
+	echo -e "\t-r <VM>, --restart <VM>, restart <VM> - Hot restart <VM>"
+	echo -e "\t-i <VM>, --status <VM>, status <VM> - Show state of <VM>"
+	echo
+}
+
+
+#####
+init_environment
+while true; do
+	case "$1" in
+		"--ssh") VBOX_PROTOCOL="ssh"; shift;;
+		"--nx") VBOX_PROTOCOL="nx"; shift;;
+		*) break;;
+	esac
+done
+
+if [ "$#" -eq "0" ]; then
+	case "$VBOX_PROTOCOL" in
+		"ssh") connect_over_ssh;;
+		"nx") connect_over_nx;;
+		*) xfatal "Unknown protocol \"$VBOX_PROTOCOL\"";;
+	esac
+else
+	case "$1" in
+		"-h"|"--help"|"help") help;;
+		"-l"|"--list"|"list") print_vms_table;;
+		"-s"|"--start"|"start") connect_over_ssh "VBoxManage startvm \"$2\" --type headless";;
+		"-t"|"--stop"|"stop") connect_over_ssh "VBoxManage controlvm \"$2\" poweroff";;
+		"-p"|"--sleep"|"sleep") connect_over_ssh "VBoxManage controlvm \"$2\" savestate";;
+		"-r"|"--restart"|"restart") connect_over_ssh "VBoxManage controlvm \"$2\" poweroff; VBoxManage startvm \"$2\" --type headless";;
+		"-i"|"--status"|"status") connect_over_ssh "VBoxManage showvminfo \"$2\" | grep State";;
+		*) connect_over_ssh "$@";;
+	esac
+fi
+
