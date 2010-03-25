@@ -42,9 +42,9 @@ init_environment()
 	[ -d "$config_dir" ] || config_dir="$HOME/.config"
 	if [ ! -e $config_dir/vbox.conf ]; then
 		echo "Copying default vbox configuration from server..."
-		scp -P "$VBOX_SSH_PORT" "$VBOX_HOST":/etc/sysconfig/vbox/vbox.conf "$config_dir"/vbox.conf
+		scp -P "$VBOX_SSH_PORT" "$VBOX_HOST":/etc/vbox/vbox.conf "$config_dir"/vbox.conf
 	fi
-	. "$config_dir"/vbox
+	. "$config_dir"/vbox.conf
 
 	local nxclient_config="$HOME/.nx/config/"`basename "$VBOX_NXCLIENT_CONFIG"`
 	if [ ! -e "$nxclient_config" ]; then
