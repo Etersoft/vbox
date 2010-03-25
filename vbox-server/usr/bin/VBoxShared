@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. /etc/sysconfig/vbox/vbox.conf
+. /etc/vbox/vbox.conf
 
 XAUTHORITY=`mktemp -p /tmp --suffix .xauth`
 cp ~/.Xauthority "$XAUTHORITY"

@@ -21,7 +21,7 @@ WITHOUT_RC_COMPAT="1"
 
 
 #####
-. /etc/sysconfig/vbox/vboxmachines.conf
+. /etc/vbox/vboxmachines.conf
 
 
 #####

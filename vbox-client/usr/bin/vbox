@@ -95,7 +95,7 @@ connect_over_ssh()
 	local x_forward="-Y"
 	check_display || x_forward=""
 
-	ssh "$x_forward" "$VBOX_COMPRESSION" "$VBOX_SSH_KEY_ONLY" "$VBOX_USER"@"$VBOX_HOST" -p "$VBOX_SSH_PORT" "$vbox_command" ||
+	ssh $x_forward $VBOX_SSH_COMPRESSION $VBOX_SSH_KEY_ONLY "$VBOX_USER"@"$VBOX_HOST" -p "$VBOX_SSH_PORT" "$vbox_command" ||
 		xfatal "Try run in intranet \$ ssh-copy-id $VBOX_USER@$VBOX_HOST for copy ssh key."
 }
 
