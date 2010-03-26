@@ -1,3 +1,4 @@
+# Add to etc sudoers: "#includedir /etc/sudo.d"
 Defaults env_keep += "DISPLAY XAUTHORITY"
 Defaults !requiretty
 ALL ALL=(ALL) NOPASSWD: /bin/su - vboxuser -c *
