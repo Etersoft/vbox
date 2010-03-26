@@ -4,23 +4,23 @@
 #
 #####
 
+
+#####
 check_display()
 {
 	xset -b
 }
 
+fatal()
+{
+	echo "$@"
+	exit 1
+}
 
-#####
 xfatal()
 {
 	check_display || fatal "$@"
 	xmessage -center "$@" || fatal "$@"
-	exit 1
-}
-
-fatal()
-{
-	echo "$@"
 	exit 1
 }
 
@@ -48,6 +48,11 @@ init_environment()
 		scp -P "$VBOX_SSH_PORT" "$VBOX_HOST":/etc/vbox/vbox.conf "$config_dir"/vbox.conf
 	fi
 	. "$config_dir"/vbox.conf
+
+	for var in VBOX_USER VBOX_HOST VBOX_SSH_PORT VBOX_SSH_OPTIONS VBOX_NXCLIENT VBOX_NXCLIENT_CONFIG VBOX_PROTOCOL \
+		DHCP_HOST DHCP_SSH_PORT DHCP_CONFIG; do
+		[ -n "`eval echo \\$"$var"`" ] || xfatal "Variable \$$var is not defined in $config_dir/vbox.conf"
+	done
 
 	local nxclient_config="$HOME/.nx/config/"`basename "$VBOX_NXCLIENT_CONFIG"`
 	if [ ! -e "$nxclient_config" ]; then
@@ -98,7 +103,7 @@ connect_over_ssh()
 	local x_forward="-Y"
 	check_display || x_forward=""
 
-	ssh $x_forward $VBOX_SSH_COMPRESSION $VBOX_SSH_KEY_ONLY "$VBOX_USER"@"$VBOX_HOST" -p "$VBOX_SSH_PORT" "$vbox_command" ||
+	ssh $x_forward $VBOX_SSH_OPTIONS "$VBOX_USER"@"$VBOX_HOST" -p "$VBOX_SSH_PORT" "$vbox_command" ||
 		xfatal "Try run in intranet \$ ssh-copy-id $VBOX_USER@$VBOX_HOST for copy ssh key."
 }
 
