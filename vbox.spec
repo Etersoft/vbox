@@ -59,7 +59,7 @@ cp -ar vbox-server/etc/* %buildroot%_sysconfdir/
 %_sysconfdir/vbox/vbox.nxs
 %_sysconfdir/vbox/vboxmachines.conf
 %_sysconfdir/vbox/vboxmachines.list
-%attr(0755,root,root) %_sysconfdir/init.d/vboxmachines
+%attr(0755,root,root) %_sysconfdir/rc.d/init.d/vboxmachines
 
 
 ##### Changelog #####
