@@ -5,17 +5,18 @@ Release: alt1
 Summary: Etersoft's scripts for testing in remote VirtualBox machines
 License: GPL
 Group: Communications
+
 Url: http://wiki.office.etersoft.ru/testing/virtualbox
 
 Packager: Devaev Maxim <mdevaev@etersoft.ru>
 
-# git.eter:/people/mdevaev/packages/vbox.git
+# http://git.etersoft.ru/people/mdevaev/packages/vbox.git
 Source: %name-%version.tar
+
 BuildArchitectures: noarch
-#AutoReq: no
 
 %description
-Etersoft's scripts for testing in remote VirtualBox machines
+Etersoft's scripts for testing in remote VirtualBox machines.
 
 ##### Client #####
 %package client
@@ -23,7 +24,7 @@ Summary: Etersoft's scripts for testing in remote VirtualBox machines
 Group: Communications
 
 %description client
-Client for remote virtualbox machines
+Client for remote virtualbox machines.
 
 ##### Server #####
 %package server
@@ -31,8 +32,7 @@ Summary: Etersoft's scripts for testing in remote VirtualBox machines
 Group: Communications
 
 %description server
-Server of remote virtualbox machines
-
+Server of remote virtualbox machines.
 
 ##### Common inst #####
 %prep
@@ -41,10 +41,8 @@ Server of remote virtualbox machines
 %install
 mkdir -p %buildroot%_bindir
 mkdir -p %buildroot%_sysconfdir
-chmod a+rx vbox-client/bin/*
-chmod a+rx vbox-server/bin/*
-cp vbox-client/bin/* %buildroot%_bindir/
-cp vbox-server/bin/* %buildroot%_bindir/
+install -m755 vbox-client/bin/* %buildroot%_bindir/
+install -m755 vbox-server/bin/* %buildroot%_bindir/
 cp -ar vbox-server/etc/* %buildroot%_sysconfdir/
 
 ##### Client #####
@@ -55,12 +53,12 @@ cp -ar vbox-server/etc/* %buildroot%_sysconfdir/
 %files server
 %_bindir/VBoxShared
 %attr(0400,root,root) %_sysconfdir/sudo.d/vbox
-%_sysconfdir/vbox/vbox.conf
-%_sysconfdir/vbox/vbox.nxs
-%_sysconfdir/vbox/vboxmachines.conf
-%_sysconfdir/vbox/vboxmachines.list
-%attr(0755,root,root) %_sysconfdir/rc.d/init.d/vboxmachines
-
+%dir %_sysconfdir/vbox/
+%config(noreplace) %_sysconfdir/vbox/vbox.conf
+%config(noreplace) %_sysconfdir/vbox/vbox.nxs
+%config(noreplace) %_sysconfdir/vbox/vboxmachines.conf
+%config(noreplace) %_sysconfdir/vbox/vboxmachines.list
+%attr(0755,root,root) %_initdir/vboxmachines
 
 ##### Changelog #####
 %changelog
