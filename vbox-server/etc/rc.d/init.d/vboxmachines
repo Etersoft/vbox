@@ -32,7 +32,7 @@ get_vm_name_by_uuid()
 
 get_necessary_vms_uuids_list()
 {
-	su "$VBOX_USER" -l -c "cat \"$VBOX_MACHINES_LIST\"" | awk '{print $1}' | sed -e '/^#/d' | sed -e '/^$/d' | sort
+	su "$VBOX_USER" -l -c "cat \"$VBOX_MACHINES_LIST\"" | sed -e '/^#/d' | sed -e '/^$/d' | sort
 }
 
 get_running_vms_uuids_list()
