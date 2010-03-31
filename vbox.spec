@@ -45,6 +45,9 @@ install -m755 vbox-client/bin/* %buildroot%_bindir/
 install -m755 vbox-server/bin/* %buildroot%_bindir/
 cp -ar vbox-server/etc/* %buildroot%_sysconfdir/
 
+%pre
+%useradd -r -g vboxuser -d /var/lib/vbox/home/ -s -c "VirtualBox User" vboxuser 2> /dev/null ||:
+
 ##### Client #####
 %files client
 %_bindir/vbox
