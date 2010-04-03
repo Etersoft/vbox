@@ -1,6 +1,6 @@
 Name: vbox
 Version: 1.0
-Release: alt1
+Release: alt2
 
 Summary: Etersoft's scripts for testing in remote VirtualBox machines
 License: GPL
