@@ -1,6 +1,8 @@
 #!/bin/bash
+# Etersoft, 2010
+# 2010 (c) Devaev Maxim <mdevaev@etersoft.ru>
 #
-# VirtualBox machines server script
+# vboxmachines - init script for vms autorun on boot
 #
 #####
 

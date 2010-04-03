@@ -1,6 +1,6 @@
 Name: vbox
 Version: 1.0
-Release: alt3
+Release: alt4
 
 Summary: Etersoft's scripts for testing in remote VirtualBox machines
 License: GPL
@@ -66,6 +66,9 @@ cp -ar vbox-server/etc/* %buildroot%_sysconfdir/
 
 ##### Changelog #####
 %changelog
+* Sat Apr 03 2010 Devaev Maxim <mdevaev@etersoft.ru> 1.0-alt4
+- Added copyright info
+
 * Sat Apr 03 2010 Devaev Maxim <mdevaev@etersoft.ru> 1.0-alt3
 - Removed -r option from useradd macro
 

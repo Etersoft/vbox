@@ -1,4 +1,10 @@
 #!/bin/bash
+# Etersoft, 2010
+# 2010 (c) Devaev Maxim <mdevaev@etersoft.ru>
+#
+# VBoxShared - VirtualBox runner at special user
+#
+#####
 
 . /etc/vbox/vbox.conf
 
