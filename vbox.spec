@@ -1,6 +1,6 @@
 Name: vbox
 Version: 1.0
-Release: alt2
+Release: alt3
 
 Summary: Etersoft's scripts for testing in remote VirtualBox machines
 License: GPL
@@ -47,7 +47,7 @@ install -m755 vbox-server/bin/* %buildroot%_bindir/
 cp -ar vbox-server/etc/* %buildroot%_sysconfdir/
 
 %pre server
-%useradd -r -g vboxuser -d /var/lib/vbox/home/ -s -c "VirtualBox User" vboxuser 2> /dev/null ||:
+%useradd -g vboxuser -d /var/lib/vbox/home/ -s -c "VirtualBox User" vboxuser 2> /dev/null ||:
 
 ##### Client #####
 %files client
@@ -66,6 +66,9 @@ cp -ar vbox-server/etc/* %buildroot%_sysconfdir/
 
 ##### Changelog #####
 %changelog
+* Sat Apr 03 2010 Devaev Maxim <mdevaev@etersoft.ru> 1.0-alt3
+- Removed -r option from useradd macro
+
 * Sat Apr 03 2010 Devaev Maxim <mdevaev@etersoft.ru> 1.0-alt2
 - Added BuildRequires: rpm-build-compat
 
