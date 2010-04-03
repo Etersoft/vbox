@@ -14,6 +14,7 @@ Packager: Devaev Maxim <mdevaev@etersoft.ru>
 Source: %name-%version.tar
 
 BuildArchitectures: noarch
+BuildRequires: rpm-build-compat
 
 %description
 Etersoft's scripts for testing in remote VirtualBox machines.
@@ -45,7 +46,7 @@ install -m755 vbox-client/bin/* %buildroot%_bindir/
 install -m755 vbox-server/bin/* %buildroot%_bindir/
 cp -ar vbox-server/etc/* %buildroot%_sysconfdir/
 
-%pre
+%pre server
 %useradd -r -g vboxuser -d /var/lib/vbox/home/ -s -c "VirtualBox User" vboxuser 2> /dev/null ||:
 
 ##### Client #####
