@@ -66,6 +66,9 @@ cp -ar vbox-server/etc/* %buildroot%_sysconfdir/
 
 ##### Changelog #####
 %changelog
+* Sat Apr 03 2010 Devaev Maxim <mdevaev@etersoft.ru> 1.0-alt2
+- Added BuildRequires: rpm-build-compat
+
 * Tue Mar 30 2010 Devaev Maxim <mdevaev@etersoft.ru> 1.0-alt1
 - Initial build
 
