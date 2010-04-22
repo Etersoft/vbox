@@ -138,12 +138,13 @@ help()
 	echo -e "Commands:"
 	echo -e "\t-h, --help, help - Print this help (Surprise! ^_^)"
 	echo -e "\t-l, --list, list - Print list of virtual machines with detailed info"
-	echo -e "\t-s <VM>, --start <VM>, start <VM> - Run <VM> (UUID or name) with headless mode"
-	echo -e "\t-t <VM>, --stop <VM>, stop <VM> - Halt <VM>"
-	echo -e "\t-a <VM>, --acpi-stop <VM>, acpi-stop <VM> - Poweroff over ACPI signal"
-	echo -e "\t-p <VM>, --sleep <VM>, sleep <VM> - Save state of <VM>"
-	echo -e "\t-r <VM>, --restart <VM>, restart <VM> - Hot restart <VM>"
-	echo -e "\t-i <VM>, --status <VM>, status <VM> - Show state of <VM>"
+	echo -e "\t--start <VM>, start <VM> - Run <VM> (UUID or name) with headless mode"
+	echo -e "\t--stop <VM>, stop <VM> - Halt <VM>"
+	echo -e "\t--acpi-stop <VM>, acpi-stop <VM> - Poweroff over ACPI signal"
+	echo -e "\t--sleep <VM>, sleep <VM> - Save state of <VM>"
+	echo -e "\t--restart <VM>, restart <VM> - Hot restart <VM>"
+	echo -e "\t--info <VM>, info <VM> - Show info of <VM>"
+	echo -e "\t--status <VM>, status <VM> - Show state of <VM>"
 	echo
 }
 
