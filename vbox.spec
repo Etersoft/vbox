@@ -1,6 +1,6 @@
 Name: vbox
 Version: 1.0
-Release: alt4
+Release: alt5
 
 Summary: Etersoft's scripts for testing in remote VirtualBox machines
 License: GPL
@@ -66,6 +66,9 @@ cp -ar vbox-server/etc/* %buildroot%_sysconfdir/
 
 ##### Changelog #####
 %changelog
+* Thu Apr 22 2010 Devaev Maxim <mdevaev@etersoft.ru> 1.0-alt5
+- Added state column, info command, ACPI poweroff command
+
 * Sat Apr 03 2010 Devaev Maxim <mdevaev@etersoft.ru> 1.0-alt4
 - Added copyright info
 
