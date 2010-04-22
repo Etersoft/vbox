@@ -172,7 +172,8 @@ else
 		"--sleep"|"sleep") connect_over_ssh "VBoxManage --nologo controlvm \"$2\" savestate";;
 		"--restart"|"restart") connect_over_ssh "VBoxManage --nologo controlvm \"$2\" poweroff; \
 			VBoxManage --nologo startvm \"$2\" --type headless";;
-		"--status"|"status") connect_over_ssh "VBoxManage showvminfo \"$2\" | grep State";;
+		"--info"|"info") connect_over_ssh "VBoxManage --nologo showvminfo \"$2\"";;
+		"--status"|"status") connect_over_ssh "VBoxManage --nologo showvminfo \"$2\" | grep State";;
 		*) connect_over_ssh "$@";;
 	esac
 fi
