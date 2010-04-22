@@ -166,13 +166,13 @@ else
 	case "$1" in
 		"-h"|"--help"|"help") help;;
 		"-l"|"--list"|"list") print_vms_table;;
-		"-s"|"--start"|"start") connect_over_ssh "VBoxManage --nologo startvm \"$2\" --type headless";;
-		"-t"|"--stop"|"stop") connect_over_ssh "VBoxManage --nologo controlvm \"$2\" poweroff";;
-		"-a"|"--acpi-stop"|"acpi-stop") connect_over_ssh "VBoxManage --nologo controlvm \"$2\" acpipowerbutton";;
-		"-p"|"--sleep"|"sleep") connect_over_ssh "VBoxManage --nologo controlvm \"$2\" savestate";;
-		"-r"|"--restart"|"restart") connect_over_ssh "VBoxManage --nologo controlvm \"$2\" poweroff; \
+		"--start"|"start") connect_over_ssh "VBoxManage --nologo startvm \"$2\" --type headless";;
+		"--stop"|"stop") connect_over_ssh "VBoxManage --nologo controlvm \"$2\" poweroff";;
+		"--acpi-stop"|"acpi-stop") connect_over_ssh "VBoxManage --nologo controlvm \"$2\" acpipowerbutton";;
+		"--sleep"|"sleep") connect_over_ssh "VBoxManage --nologo controlvm \"$2\" savestate";;
+		"--restart"|"restart") connect_over_ssh "VBoxManage --nologo controlvm \"$2\" poweroff; \
 			VBoxManage --nologo startvm \"$2\" --type headless";;
-		"-i"|"--status"|"status") connect_over_ssh "VBoxManage showvminfo \"$2\" | grep State";;
+		"--status"|"status") connect_over_ssh "VBoxManage showvminfo \"$2\" | grep State";;
 		*) connect_over_ssh "$@";;
 	esac
 fi
