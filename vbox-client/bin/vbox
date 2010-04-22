@@ -73,26 +73,28 @@ get_vms_table()
 		vms_uuids_list=\`VBoxManage --nologo list vms | grep -o '\{.*\}' | sed -e 's/{\(.*\)}/\1/'\`
 		for vms_uuids_list_item in \$vms_uuids_list; do
 			vm_info=\`VBoxManage --nologo showvminfo \"\$vms_uuids_list_item\"\`
+			vm_state=\`echo \"\$vm_info\" | grep 'State:' | head -n 1 | sed -e 's/^State:\s*\([^(]*\)\s(.*/\1/g' | grep -v 'powered off' \`
 			vm_name=\`echo \"\$vm_info\" | grep 'Name:' | head -n 1 | sed -e 's/^Name:\s*//g'\`
 			vm_mac=\`echo \"\$vm_info\" | grep -o '[0-9A-F]\{12\}' | head -n 1 | sed -e 's/\([0-9A-F][0-9A-F]\)/\1:/g' | sed -e 's/:$//'\`
 			if [ ! -z \"\$vm_mac\" ]; then
 				vm_hostname=\`echo \"\$dhcp_info\" | grep -i \"\$vm_mac\" | awk '{print \$2}'\`
 				vm_ip=\`echo \"\$dhcp_info\" | grep -i \"\$vm_mac\" | awk '{print \$8}' | sed -e 's/;$//'\`
 			fi
-			printf \"|| %30s | %36s | %30s | %15s ||\n\" \"\$vm_name\" \"\$vms_uuids_list_item\" \"\$vm_hostname\" \"\$vm_ip\"
-		done"
+			printf \"|| %10s | %30s | %36s | %30s | %15s ||\n\" \"\$vm_state\" \"\$vm_name\" \
+				\"\$vms_uuids_list_item\" \"\$vm_hostname\" \"\$vm_ip\"
+		done" | sort
 }
 
 print_vms_table()
 {
 	echo -n "Getting VirtualBox machines list at \"$VBOX_HOST\"... "
-	vms_table=`get_vms_table | sort`
+	vms_table=`get_vms_table`
 	echo -e "OK\n"
-	echo "++--------------------------------------------------------------------------------------------------------------------------++"
-	printf "|| %30s | %36s | %30s | %15s ||\n" "Machine name" "UUID" "Hostname" "IP"
-	echo "++--------------------------------------------------------------------------------------------------------------------------++"
+	echo "++---------------------------------------------------------------------------------------------------------------------------------------++"
+	printf "|| %10s | %30s | %36s | %30s | %15s ||\n" "State" "Machine name" "UUID" "Hostname" "IP"
+	echo "++---------------------------------------------------------------------------------------------------------------------------------------++"
 	echo -e "$vms_table"
-	echo "++--------------------------------------------------------------------------------------------------------------------------++"
+	echo "++---------------------------------------------------------------------------------------------------------------------------------------++"
 }
 
 
