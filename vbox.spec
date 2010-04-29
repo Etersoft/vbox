@@ -1,6 +1,6 @@
 Name: vbox
 Version: 1.0
-Release: alt6
+Release: alt7
 
 Summary: Etersoft's scripts for testing in remote VirtualBox machines
 License: GPL
@@ -66,6 +66,9 @@ cp -ar vbox-server/etc/* %buildroot%_sysconfdir/
 
 ##### Changelog #####
 %changelog
+* Thu Apr 29 2010 Devaev Maxim <mdevaev@etersoft.ru> 1.0-alt7
+- Added ssh-agent test
+
 * Thu Apr 22 2010 Devaev Maxim <mdevaev@etersoft.ru> 1.0-alt6
 - Actual help information
 
