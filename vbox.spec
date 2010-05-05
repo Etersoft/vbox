@@ -1,6 +1,6 @@
 Name: vbox
 Version: 1.0
-Release: alt9
+Release: alt10
 
 Summary: Etersoft's scripts for testing in remote VirtualBox machines
 License: GPL
@@ -42,6 +42,7 @@ Server of remote virtualbox machines.
 %install
 mkdir -p %buildroot%_bindir
 mkdir -p %buildroot%_sysconfdir
+mkdir -p %buildroot/var/lib/vbox/
 install -m755 vbox-client/bin/* %buildroot%_bindir/
 install -m755 vbox-server/bin/* %buildroot%_bindir/
 cp -ar vbox-server/etc/* %buildroot%_sysconfdir/
@@ -64,9 +65,14 @@ cp -ar vbox-server/etc/* %buildroot%_sysconfdir/
 %config(noreplace) %_sysconfdir/vbox/vboxmachines.conf
 %config(noreplace) %_sysconfdir/vbox/vboxmachines.list
 %attr(0755,root,root) %_initdir/vboxmachines
+%dir /var/lib/vbox/
+%attr(0700,vboxuser,vboxuser) /var/lib/vbox/
 
 ##### Changelog #####
 %changelog
+* Wed May 05 2010 Devaev Maxim <mdevaev@etersoft.ru> 1.0-alt10
+- Fixed missing directory /var/lib/vbox
+
 * Wed May 05 2010 Devaev Maxim <mdevaev@etersoft.ru> 1.0-alt9
 - Fixed vboxuser home path
 
