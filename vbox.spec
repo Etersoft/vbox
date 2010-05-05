@@ -1,6 +1,6 @@
 Name: vbox
 Version: 1.0
-Release: alt8
+Release: alt9
 
 Summary: Etersoft's scripts for testing in remote VirtualBox machines
 License: GPL
@@ -48,7 +48,7 @@ cp -ar vbox-server/etc/* %buildroot%_sysconfdir/
 
 %pre server
 %groupadd vboxusers ||:
-%useradd -G vboxusers -d /var/lib/vbox/ -c "VirtualBox User" vboxuser ||:
+%useradd -G vboxusers -d /var/lib/vbox -c "VirtualBox User" vboxuser ||:
 
 ##### Client #####
 %files client
@@ -67,6 +67,9 @@ cp -ar vbox-server/etc/* %buildroot%_sysconfdir/
 
 ##### Changelog #####
 %changelog
+* Wed May 05 2010 Devaev Maxim <mdevaev@etersoft.ru> 1.0-alt9
+- Fixed vboxuser home path
+
 * Wed May 05 2010 Devaev Maxim <mdevaev@etersoft.ru> 1.0-alt8
 - Fixed vboxuser creation
 
