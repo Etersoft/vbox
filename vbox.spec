@@ -1,6 +1,6 @@
 Name: vbox
 Version: 1.0
-Release: alt7
+Release: alt8
 
 Summary: Etersoft's scripts for testing in remote VirtualBox machines
 License: GPL
@@ -47,7 +47,8 @@ install -m755 vbox-server/bin/* %buildroot%_bindir/
 cp -ar vbox-server/etc/* %buildroot%_sysconfdir/
 
 %pre server
-%useradd -g vboxuser -d /var/lib/vbox/home/ -s -c "VirtualBox User" vboxuser 2> /dev/null ||:
+%groupadd vboxusers ||:
+%useradd -G vboxusers -d /var/lib/vbox/ -c "VirtualBox User" vboxuser ||:
 
 ##### Client #####
 %files client
@@ -66,6 +67,9 @@ cp -ar vbox-server/etc/* %buildroot%_sysconfdir/
 
 ##### Changelog #####
 %changelog
+* Wed May 05 2010 Devaev Maxim <mdevaev@etersoft.ru> 1.0-alt8
+- Fixed vboxuser creation
+
 * Thu Apr 29 2010 Devaev Maxim <mdevaev@etersoft.ru> 1.0-alt7
 - Added ssh-agent test
 
