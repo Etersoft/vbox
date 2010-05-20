@@ -1,6 +1,6 @@
 Name: vbox
 Version: 1.0
-Release: alt10
+Release: alt11
 
 Summary: Etersoft's scripts for testing in remote VirtualBox machines
 License: GPL
@@ -70,6 +70,9 @@ cp -ar vbox-server/etc/* %buildroot%_sysconfdir/
 
 ##### Changelog #####
 %changelog
+* Thu May 20 2010 Devaev Maxim <mdevaev@etersoft.ru> 1.0-alt11
+- Ssh-agent detecting by SSH_AUTH_SOCK
+
 * Wed May 05 2010 Devaev Maxim <mdevaev@etersoft.ru> 1.0-alt10
 - Fixed missing directory /var/lib/vbox
 
