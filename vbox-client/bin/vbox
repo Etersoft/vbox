@@ -32,7 +32,7 @@ if [ "$UID" == "0" ]; then
 	xfatal "Do not run \"vbox\" from a \"root\" account!"
 fi
 
-if [ -z "$SSH_AGENT_PID" ]; then
+if [ -z "$SSH_AUTH_SOCK" ]; then
 	xfatal "Run ssh-agent, use \"eval \`ssh-agent\`\" or \"eval \`ssh-agent -u\`\", and then, run \"ssh-add\""
 fi
 
