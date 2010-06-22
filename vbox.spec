@@ -1,41 +1,33 @@
 Name: vbox
 Version: 1.0
 Release: alt11
-
 Summary: Etersoft's scripts for testing in remote VirtualBox machines
 License: GPL
 Group: Communications
-
 Url: http://wiki.office.etersoft.ru/testing/virtualbox
-
 Packager: Devaev Maxim <mdevaev@etersoft.ru>
-
-# http://git.etersoft.ru/people/mdevaev/packages/vbox.git
+#Git: http://git.etersoft.ru/people/mdevaev/packages/vbox.git
 Source: %name-%version.tar
-
-BuildArchitectures: noarch
+BuildArch: noarch
 BuildRequires: rpm-build-compat
-
 %description
 Etersoft's scripts for testing in remote VirtualBox machines.
 
-##### Client #####
+
 %package client
 Summary: Etersoft's scripts for testing in remote VirtualBox machines
 Group: Communications
-
 %description client
 Client for remote virtualbox machines.
 
-##### Server #####
+
 %package server
 Summary: Etersoft's scripts for testing in remote VirtualBox machines
 Group: Communications
-
 %description server
 Server of remote virtualbox machines.
 
-##### Common inst #####
+
 %prep
 %setup
 
@@ -47,15 +39,16 @@ install -m755 vbox-client/bin/* %buildroot%_bindir/
 install -m755 vbox-server/bin/* %buildroot%_bindir/
 cp -ar vbox-server/etc/* %buildroot%_sysconfdir/
 
+
 %pre server
 %groupadd vboxusers ||:
 %useradd -G vboxusers -d /var/lib/vbox -c "VirtualBox User" vboxuser ||:
 
-##### Client #####
+
 %files client
 %_bindir/vbox
 
-##### Server #####
+
 %files server
 %_bindir/VBoxShared
 %attr(0400,root,root) %_sysconfdir/sudo.d/vbox
@@ -68,7 +61,7 @@ cp -ar vbox-server/etc/* %buildroot%_sysconfdir/
 %dir /var/lib/vbox/
 %attr(0700,vboxuser,vboxuser) /var/lib/vbox/
 
-##### Changelog #####
+
 %changelog
 * Thu May 20 2010 Devaev Maxim <mdevaev@etersoft.ru> 1.0-alt11
 - Ssh-agent detecting by SSH_AUTH_SOCK
