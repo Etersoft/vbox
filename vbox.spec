@@ -1,6 +1,6 @@
 Name: vbox
 Version: 1.0
-Release: alt11
+Release: alt12
 Summary: Etersoft's scripts for testing in remote VirtualBox machines
 License: GPL
 Group: Communications
@@ -63,6 +63,9 @@ cp -ar vbox-server/etc/* %buildroot%_sysconfdir/
 
 
 %changelog
+* Tue Jun 22 2010 Devaev Maxim <mdevaev@etersoft.ru> 1.0-alt12
+- Changed default DHCP config path
+
 * Thu May 20 2010 Devaev Maxim <mdevaev@etersoft.ru> 1.0-alt11
 - Ssh-agent detecting by SSH_AUTH_SOCK
 
