@@ -1,6 +1,6 @@
 Name: vbox
-Version: 1.0
-Release: alt12
+Version: 1.1
+Release: alt1
 Summary: Etersoft's scripts for testing in remote VirtualBox machines
 License: GPL
 Group: Communications
@@ -28,21 +28,36 @@ Group: Communications
 Server of remote virtualbox machines.
 
 
+%package dhcpinfo
+Summary: Etersoft's scripts for testing in remote VirtualBox machines
+Group: System/Servers
+%description dhcpinfo
+Special ssh user for issue dhcp information
+
+
 %prep
 %setup
+
 
 %install
 mkdir -p %buildroot%_bindir
 mkdir -p %buildroot%_sysconfdir
-mkdir -p %buildroot/var/lib/vbox/
+mkdir -p %buildroot%_var/lib/vbox/
 install -m755 vbox-client/bin/* %buildroot%_bindir/
 install -m755 vbox-server/bin/* %buildroot%_bindir/
+install -m755 vbox-dhcpinfo/bin/* %buildroot%_bindir/
 cp -ar vbox-server/etc/* %buildroot%_sysconfdir/
+cp -ar vbox-dhcpinfo/etc/* %buildroot%_sysconfdir/
 
 
 %pre server
 %groupadd vboxusers ||:
 %useradd -G vboxusers -d /var/lib/vbox -c "VirtualBox User" vboxuser ||:
+
+
+%pre dhcpinfo
+%groupadd dhcpinfo ||:
+%useradd -G dhcpinfo -c "DHCP information issue" -s %_bindir/dhcpinfo dhcpinfo ||:
 
 
 %files client
@@ -62,7 +77,15 @@ cp -ar vbox-server/etc/* %buildroot%_sysconfdir/
 %attr(0700,vboxuser,vboxuser) /var/lib/vbox/
 
 
+%files dhcpinfo
+%_bindir/dhcpinfo
+%config(noreplace) %_sysconfdir/dhcpinfo.conf
+
+
 %changelog
+* Mon Jul 12 2010 Devaev Maxim <mdevaev@etersoft.ru> 1.1-alt1
+- Added fake login shell, issue DHCP information over SSH
+
 * Tue Jun 22 2010 Devaev Maxim <mdevaev@etersoft.ru> 1.0-alt12
 - Changed default DHCP config path
 

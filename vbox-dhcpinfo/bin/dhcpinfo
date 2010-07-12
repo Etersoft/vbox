@@ -1,0 +1,6 @@
+#!/bin/bash
+
+. /etc/dhcpinfo.conf
+
+cat $DHCP_CONFIG
+

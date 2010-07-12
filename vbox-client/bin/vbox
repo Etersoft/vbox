@@ -56,7 +56,7 @@ init_environment()
 	. "$config_dir"/vbox.conf
 
 	for var in VBOX_USER VBOX_HOST VBOX_SSH_PORT VBOX_SSH_OPTIONS VBOX_NXCLIENT VBOX_NXCLIENT_CONFIG VBOX_PROTOCOL \
-		DHCP_HOST DHCP_SSH_PORT DHCP_CONFIG; do
+		DHCP_HOST DHCP_SSH_PORT; do
 		[ -n "`eval echo \\$"$var"`" ] || xfatal "Variable \$$var is not defined in $config_dir/vbox.conf"
 	done
 
@@ -72,7 +72,7 @@ init_environment()
 #####
 get_vms_table()
 {
-	dhcp_info=`ssh "$DHCP_HOST" -p "$DHCP_SSH_PORT" "grep \"# virtualbox systems\" \"$DHCP_CONFIG\""`
+	dhcp_info=`ssh "$DHCP_HOST" -p "$DHCP_SSH_PORT" | grep "# virtualbox systems"`
 	ssh "$VBOX_USER"@"$VBOX_HOST" -p "$VBOX_SSH_PORT" "dhcp_info=\"$dhcp_info\"
 		vms_uuids_list=\`VBoxManage --nologo list vms | grep -o '\{.*\}' | sed -e 's/{\(.*\)}/\1/'\`
 		for vms_uuids_list_item in \$vms_uuids_list; do
