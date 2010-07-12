@@ -52,12 +52,12 @@ cp -ar vbox-dhcpinfo/etc/* %buildroot%_sysconfdir/
 
 %pre server
 %groupadd vboxusers ||:
-%useradd -G vboxusers -d /var/lib/vbox -c "VirtualBox User" vboxuser ||:
+%useradd -g vboxusers -d /var/lib/vbox -c "VirtualBox User" vboxuser ||:
 
 
 %pre dhcpinfo
 %groupadd dhcpinfo ||:
-%useradd -G dhcpinfo -c "DHCP information issue" -s %_bindir/dhcpinfo dhcpinfo ||:
+%useradd -g dhcpinfo -c "DHCP information issue" -s %_bindir/dhcpinfo dhcpinfo ||:
 
 
 %files client
