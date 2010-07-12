@@ -43,11 +43,13 @@ Special ssh user for issue dhcp information
 mkdir -p %buildroot%_bindir
 mkdir -p %buildroot%_sysconfdir
 mkdir -p %buildroot%_var/lib/vbox/
+mkdir -p %buildroot%_var/lib/dhcpinfo/
 install -m755 vbox-client/bin/* %buildroot%_bindir/
 install -m755 vbox-server/bin/* %buildroot%_bindir/
 install -m755 vbox-dhcpinfo/bin/* %buildroot%_bindir/
 cp -ar vbox-server/etc/* %buildroot%_sysconfdir/
 cp -ar vbox-dhcpinfo/etc/* %buildroot%_sysconfdir/
+cp -ar vbox-dhcpinfo/var/* %buildroot%_var/
 
 
 %pre server
@@ -72,6 +74,7 @@ cp -ar vbox-dhcpinfo/etc/* %buildroot%_sysconfdir/
 %config(noreplace) %_sysconfdir/vbox/vbox.nxs
 %config(noreplace) %_sysconfdir/vbox/vboxmachines.conf
 %config(noreplace) %_sysconfdir/vbox/vboxmachines.list
+%attr(0600,vboxuser,vboxusers) %_sysconfdir/vbox/dhcpinfo.key
 %attr(0755,root,root) %_initdir/vboxmachines
 %dir /var/lib/vbox/
 %attr(0700,vboxuser,vboxuser) /var/lib/vbox/
@@ -80,6 +83,7 @@ cp -ar vbox-dhcpinfo/etc/* %buildroot%_sysconfdir/
 %files dhcpinfo
 %_bindir/dhcpinfo
 %config(noreplace) %_sysconfdir/dhcpinfo.conf
+%_var/lib/dhcpinfo/
 
 
 %changelog
