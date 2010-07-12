@@ -57,7 +57,7 @@ cp -ar vbox-dhcpinfo/etc/* %buildroot%_sysconfdir/
 
 %pre dhcpinfo
 %groupadd dhcpinfo ||:
-%useradd -g dhcpinfo -c "DHCP information issue" -s %_bindir/dhcpinfo dhcpinfo ||:
+%useradd -g dhcpinfo -c "DHCP information issue" -s %_bindir/dhcpinfo -b /dev/null dhcpinfo ||:
 
 
 %files client
@@ -85,6 +85,8 @@ cp -ar vbox-dhcpinfo/etc/* %buildroot%_sysconfdir/
 %changelog
 * Mon Jul 12 2010 Devaev Maxim <mdevaev@etersoft.ru> 1.1-alt1
 - Added fake login shell, issue DHCP information over SSH
+- Fixed group creating
+- Fixed home folder for dhcpinfo user to /dev/null
 
 * Tue Jun 22 2010 Devaev Maxim <mdevaev@etersoft.ru> 1.0-alt12
 - Changed default DHCP config path
