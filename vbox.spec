@@ -91,6 +91,7 @@ cp -ar vbox-dhcpinfo/var/* %buildroot%_var/
 - Added fake login shell, issue DHCP information over SSH
 - Fixed group creating
 - Fixed home folder for dhcpinfo user to /dev/null
+- DSA key authentication for dhcpinfo
 
 * Tue Jun 22 2010 Devaev Maxim <mdevaev@etersoft.ru> 1.0-alt12
 - Changed default DHCP config path
