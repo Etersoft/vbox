@@ -73,7 +73,7 @@ init_environment()
 get_vms_table()
 {
 	ssh "$VBOX_USER"@"$VBOX_HOST" -p "$VBOX_SSH_PORT" "dhcp_info=\`ssh -T dhcpinfo@$DHCP_HOST -p $DHCP_SSH_PORT \\
-		-i /etc/vbox/dhcpinfo.key | grep \"# virtualbox systems\"\`
+		-o \"StrictHostKeyChecking no\" -i /etc/vbox/dhcpinfo.key | grep \"# virtualbox systems\"\`
 		vms_uuids_list=\`VBoxManage --nologo list vms | grep -o '\{.*\}' | sed -e 's/{\(.*\)}/\1/'\`
 		for vms_uuids_list_item in \$vms_uuids_list; do
 			vm_info=\`VBoxManage --nologo showvminfo \"\$vms_uuids_list_item\"\`

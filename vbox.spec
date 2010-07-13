@@ -1,6 +1,6 @@
 Name: vbox
 Version: 1.1
-Release: alt1
+Release: alt2
 Summary: Etersoft's scripts for testing in remote VirtualBox machines
 License: GPL
 Group: Communications
@@ -87,6 +87,9 @@ cp -ar vbox-dhcpinfo/var/* %buildroot%_var/
 
 
 %changelog
+* Tue Jul 12 2010 Devaev Maxim <mdevaev@etersoft.ru> 1.1-alt2
+- Auto checks host key
+
 * Mon Jul 12 2010 Devaev Maxim <mdevaev@etersoft.ru> 1.1-alt1
 - Added fake login shell, issue DHCP information over SSH
 - Fixed group creating
