@@ -1,6 +1,6 @@
 Name: vbox
 Version: 1.1
-Release: alt2
+Release: alt3
 Summary: Etersoft's scripts for testing in remote VirtualBox machines
 License: GPL
 Group: Communications
@@ -59,7 +59,7 @@ cp -ar vbox-dhcpinfo/var/* %buildroot%_var/
 
 %pre dhcpinfo
 %groupadd dhcpinfo ||:
-%useradd -g dhcpinfo -c "DHCP information issue" -s %_bindir/dhcpinfo -b /dev/null dhcpinfo ||:
+%useradd -g dhcpinfo -c "DHCP information issue" -s %_bindir/dhcpinfo -d /var/lib/dhcpinfo dhcpinfo ||:
 
 
 %files client
@@ -87,6 +87,9 @@ cp -ar vbox-dhcpinfo/var/* %buildroot%_var/
 
 
 %changelog
+* Tue Jul 13 2010 Devaev Maxim <mdevaev@etersoft.ru> 1.1-alt3
+- Fixed dhcpinfo user creation
+
 * Tue Jul 12 2010 Devaev Maxim <mdevaev@etersoft.ru> 1.1-alt2
 - Auto checks host key
 
