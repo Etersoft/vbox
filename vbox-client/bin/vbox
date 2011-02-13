@@ -69,6 +69,7 @@ init_environment()
 }
 
 
+# FIXME: move to server
 #####
 get_vms_table()
 {
@@ -154,6 +155,7 @@ help()
 
 
 #####
+# FIXME: add support for other vboxuser
 init_environment
 while true; do
 	case "$1" in
