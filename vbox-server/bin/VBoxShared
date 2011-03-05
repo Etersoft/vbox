@@ -9,7 +9,6 @@
 . /etc/vbox/vbox.conf
 
 XAUTHORITY=`mktemp -p /tmp --suffix .xauth`
-VIRTUALBOX=`which VirtualBox`
 cp -f ~/.Xauthority "$XAUTHORITY"
 chmod 664 "$XAUTHORITY"
 sudo su - "$VBOX_USER" -c "export DISPLAY=\"$DISPLAY\" XAUTHORITY=\"$XAUTHORITY\"; $VIRTUALBOX"
