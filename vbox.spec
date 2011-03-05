@@ -1,6 +1,6 @@
 Name: vbox
 Version: 1.1
-Release: alt4
+Release: alt5
 
 Summary: Etersoft's scripts for testing in remote VirtualBox machines
 
@@ -14,7 +14,7 @@ Packager: Devaev Maxim <mdevaev@etersoft.ru>
 Source: %name-%version.tar
 
 BuildArch: noarch
-BuildRequires: rpm-build-compat
+BuildRequires: rpm-build-intro
 
 %description
 Etersoft's scripts for testing in remote VirtualBox machines.
@@ -97,6 +97,10 @@ cp -ar vbox-dhcpinfo/var/* %buildroot%_var/
 
 
 %changelog
+* Sat Mar 05 2011 Denis Baranov <baraka@altlinux.ru> 1.1-alt5
+- cleanup spec and new build
+- do not autoreq VirtualBox
+
 * Sat Mar 05 2011 Denis Baranov <baraka@altlinux.ru> 1.1-alt4
 - Add option vbox --reset
 - Get list vms on server
