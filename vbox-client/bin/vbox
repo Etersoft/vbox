@@ -133,6 +133,7 @@ help()
 	echo -e "\t--acpi-stop <VM>, acpi-stop <VM> - Poweroff over ACPI signal"
 	echo -e "\t--sleep <VM>, sleep <VM> - Save state of <VM>"
 	echo -e "\t--restart <VM>, restart <VM> - Hot restart <VM>"
+	echo -e "\t--reset <VM>, reset <VM> - Hot reset <VM>"
 	echo -e "\t--info <VM>, info <VM> - Show info of <VM>"
 	echo -e "\t--status <VM>, status <VM> - Show state of <VM>"
 	echo
@@ -165,6 +166,7 @@ else
 		"--sleep"|"sleep") connect_over_ssh "VBoxManage --nologo controlvm \"$2\" savestate";;
 		"--restart"|"restart") connect_over_ssh "VBoxManage --nologo controlvm \"$2\" poweroff; \
 			VBoxManage --nologo startvm \"$2\" --type headless";;
+		"--reset"|"reset") connect_over_ssh "VBoxManage --nologo controlvm \"$2\" reset";;
 		"--info"|"info") connect_over_ssh "VBoxManage --nologo showvminfo \"$2\"";;
 		"--status"|"status") connect_over_ssh "VBoxManage --nologo showvminfo \"$2\" | grep State";;
 		*) connect_over_ssh "$@";;
