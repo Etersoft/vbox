@@ -24,6 +24,7 @@ WITHOUT_RC_COMPAT="1"
 
 #####
 . /etc/vbox/vboxmachines.conf
+. /etc/vbox/vbox.conf
 
 
 #####
@@ -109,6 +110,28 @@ status_necessary_vms()
 	done
 }
 
+get_list_vms()
+{
+	dhcp_info=`ssh -T dhcpinfo@$DHCP_HOST -p $DHCP_SSH_PORT \
+		-o "StrictHostKeyChecking no" -i /etc/vbox/dhcpinfo.key | grep "# virtualbox systems"`
+		vms_uuids_list=`VBoxManage --nologo list vms | grep -o '\{.*\}' | sed -e 's/{\(.*\)}/\1/'`
+		for vms_uuids_list_item in $vms_uuids_list; do
+			vm_info=`VBoxManage --nologo showvminfo "$vms_uuids_list_item"`
+			vm_state=`echo "$vm_info" | grep 'State:' | head -n 1 | sed -e 's/^State:\s*\([^(]*\)\s(.*/\1/g' | grep -v 'powered off' `
+			vm_name=`echo "$vm_info" | grep 'Name:' | head -n 1 | sed -e 's/^Name:\s*//g'`
+			vm_mac=`echo "$vm_info" | grep -o '[0-9A-F]\{12\}' | head -n 1 | sed -e 's/\([0-9A-F][0-9A-F]\)/\1:/g' | sed -e 's/:$//'`
+			if [ ! -z "$vm_mac" ]; then
+				vm_hostname=`echo "$dhcp_info" | grep -i "$vm_mac" | awk '{print \$2}'`
+				vm_ip=`echo "$dhcp_info" | grep -i "$vm_mac" | awk '{print \$8}' | sed -e 's/;$//'`
+			fi
+			if [ -z "$vm_ip" ]; then
+				vm_ip=`VBoxManage guestproperty enumerate "$vms_uuids_list_item" | grep "V4/IP" | cut -d"," -f2 | cut -d":" -f2 | tr -d " "`
+			fi
+			printf "|| %10s | %30s | %36s | %30s | %15s ||\n" "$vm_state" "$vm_name" \
+				"$vms_uuids_list_item" "$vm_hostname" "$vm_ip"
+		done
+}
+
 
 #####
 case "$1" in
@@ -116,6 +139,7 @@ case "$1" in
 	"stop") stop_necessary_vms;;
 	"restart") restart_necessary_vms;;
 	"status") status_necessary_vms;;
+	"get_list") get_list_vms;;
 	*) msg_usage "${0##*/} {start|stop|restart|status}"
 	exit 1
 esac
