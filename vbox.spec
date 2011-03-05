@@ -1,18 +1,23 @@
 Name: vbox
 Version: 1.1
 Release: alt4
+
 Summary: Etersoft's scripts for testing in remote VirtualBox machines
+
 License: GPL
 Group: Communications
 Url: http://wiki.office.etersoft.ru/testing/virtualbox
+
 Packager: Devaev Maxim <mdevaev@etersoft.ru>
+
 #Git: http://git.etersoft.ru/people/mdevaev/packages/vbox.git
 Source: %name-%version.tar
+
 BuildArch: noarch
 BuildRequires: rpm-build-compat
+
 %description
 Etersoft's scripts for testing in remote VirtualBox machines.
-
 
 %package client
 Summary: Etersoft's scripts for testing in remote VirtualBox machines
@@ -40,14 +45,19 @@ Special ssh user for issue dhcp information
 
 
 %install
-mkdir -p %buildroot%_bindir
-mkdir -p %buildroot%_sysconfdir
+mkdir -p %buildroot%_bindir/
+mkdir -p %buildroot%_sysconfdir/
+mkdir -p %buildroot%_initdir/
 mkdir -p %buildroot%_var/lib/vbox/
 mkdir -p %buildroot%_var/lib/dhcpinfo/
+
 install -m755 vbox-client/bin/* %buildroot%_bindir/
 install -m755 vbox-server/bin/* %buildroot%_bindir/
 install -m755 vbox-dhcpinfo/bin/* %buildroot%_bindir/
-cp -ar vbox-server/etc/* %buildroot%_sysconfdir/
+
+install -m755 vbox-server/etc/rc.d/init.d/vboxmachines %buildroot%_initdir/
+cp -ar vbox-server/etc/sudo.d %buildroot%_sysconfdir/
+cp -ar vbox-server/etc/vbox %buildroot%_sysconfdir/
 cp -ar vbox-dhcpinfo/etc/* %buildroot%_sysconfdir/
 cp -ar vbox-dhcpinfo/var/* %buildroot%_var/
 
@@ -75,7 +85,7 @@ cp -ar vbox-dhcpinfo/var/* %buildroot%_var/
 %config(noreplace) %_sysconfdir/vbox/vboxmachines.conf
 %config(noreplace) %_sysconfdir/vbox/vboxmachines.list
 %attr(0600,vboxuser,vboxusers) %_sysconfdir/vbox/dhcpinfo.key
-%attr(0755,root,root) %_initdir/vboxmachines
+%_initdir/vboxmachines
 %dir /var/lib/vbox/
 %attr(0700,vboxuser,vboxuser) /var/lib/vbox/
 
