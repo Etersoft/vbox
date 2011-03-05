@@ -1,6 +1,6 @@
 Name: vbox
 Version: 1.1
-Release: alt3
+Release: alt4
 Summary: Etersoft's scripts for testing in remote VirtualBox machines
 License: GPL
 Group: Communications
@@ -87,6 +87,10 @@ cp -ar vbox-dhcpinfo/var/* %buildroot%_var/
 
 
 %changelog
+* Sat Mar 05 2011 Denis Baranov <baraka@altlinux.ru> 1.1-alt4
+- Add option vbox --reset
+- Get list vms on server
+
 * Tue Jul 13 2010 Devaev Maxim <mdevaev@etersoft.ru> 1.1-alt3
 - Fixed dhcpinfo user creation
 
