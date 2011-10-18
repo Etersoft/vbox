@@ -80,20 +80,36 @@ stop_vm_by_uuid()
 #####
 start_necessary_vms()
 {
-	retcode="0"
-	get_necessary_vms_uuids_list "$@" | while read vm_uuid; do
+	local retcode="0"
+	local vm_group="$1"
+	local script_dir="$VBOX_MACHINES_SCRIPTS_DIR"
+	[ -z "$vm_group" ] || script_dir="$VBOX_MACHINES_SCRIPTS_DIR/$vm_group"
+	get_necessary_vms_uuids_list "$vm_group" | while read vm_uuid; do
+		ExecIfExecutable "$script_dir/vmstart-pre" $vm_uuid "`get_vm_name_by_uuid "$vm_uuid"`"
 		start_vm_by_uuid "$vm_uuid"
-		[ "$?" -ne "0" ] && retcode="1"
+		if [ "$?" -ne "0" ]; then
+			retcode="1"
+		else
+			ExecIfExecutable "$script_dir/vmstart-post" $vm_uuid "`get_vm_name_by_uuid "$vm_uuid"`"
+		fi
 	done
 	return "$retcode"
 }
 
 stop_necessary_vms()
 {
-	retcode="0"
-	get_necessary_vms_uuids_list "$@" | while read vm_uuid; do
+	local retcode="0"
+	local vm_group="$1"
+	local script_dir="$VBOX_MACHINES_SCRIPTS_DIR"
+	[ -z "$vm_group" ] || script_dir="$VBOX_MACHINES_SCRIPTS_DIR/$vm_group"
+	get_necessary_vms_uuids_list "$vm_group" | while read vm_uuid; do
+		ExecIfExecutable "$script_dir/vmstop-pre" $vm_uuid "`get_vm_name_by_uuid "$vm_uuid"`"
 		stop_vm_by_uuid "$vm_uuid"
-		[ "$?" -ne "0" ] && retcode="1"
+		if [ "$?" -ne "0" ]; then
+			retcode="1"
+		else
+			ExecIfExecutable "$script_dir/vmstop-post" $vm_uuid "`get_vm_name_by_uuid "$vm_uuid"`"
+		fi
 	done
 	return "$retcode"
 }
@@ -143,22 +159,41 @@ get_list_vms()
 #####
 start_vms()
 {
-	start_necessary_vms
+	local retcode="0"
+	echo "* Global group:"
+	start_necessary_vms || retcode="1"
 	get_vm_groups_list | while read vm_group; do
+		local script_dir="$VBOX_MACHINES_SCRIPTS_DIR/$vm_group"
 		echo
-		echo "* Group: $vm_group" 
+		echo "* Group '$vm_group':"
+		ExecIfExecutable "$script_dir/groupstart-pre" "$vm_group"
 		start_necessary_vms "$vm_group"
+		if [ "$?" -ne "0" ]; then
+			retcode="2"
+		else
+			ExecIfExecutable "$script_dir/groupstart-post" "$vm_group"
+		fi
 	done
+	return "$retcode"
 }
 
 stop_vms()
 {
-	stop_necessary_vms
+	local retcode="0"
+	echo "* Global group:"
+	stop_necessary_vms || retcode="1"
 	get_vm_groups_list | while read vm_group; do
 		echo
-		echo "* Group: $vm_group" 
+		echo "* Group '$vm_group':"
+		ExecIfExecutable "$script_dir/groupstop-pre" "$vm_group"
 		stop_necessary_vms "$vm_group"
+		if [ "$?" -ne "0" ]; then
+			retcode="2"
+		else
+			ExecIfExecutable "$script_dir/groupstop-post" "$vm_group"
+		fi
 	done
+	return "$retcode"
 }
 
 restart_vms()
@@ -169,10 +204,11 @@ restart_vms()
 
 status_vms()
 {
+	echo "* Global group:"
 	status_necessary_vms
 	get_vm_groups_list | while read vm_group; do
 		echo
-		echo "* Group: $vm_group" 
+		echo "* Group '$vm_group':"
 		status_necessary_vms "$vm_group"
 	done
 }
@@ -180,10 +216,10 @@ status_vms()
 
 #####
 case "$1" in
-	"start") start_vms;;
-	"stop") stop_vms;;
-	"restart") restart_vms;;
-	"status") status_vms;;
+	"start") start_vms "$2";;
+	"stop") stop_vms "$2";;
+	"restart") restart_vms "$2";;
+	"status") status_vms "$2";;
 	"get_list") get_list_vms;;
 	*) msg_usage "${0##*/} {start|stop|restart|status}"
 	exit 1

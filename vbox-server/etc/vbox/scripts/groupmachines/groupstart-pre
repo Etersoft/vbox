@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# This file runs before group machines started (It must be executable).
+# Arguments:
+#  $1 is group machines name

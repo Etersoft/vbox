@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# This file runs after group machines stoped (It must be executable).
+# Arguments:
+#  $1 is group machines name
