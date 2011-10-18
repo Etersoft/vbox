@@ -1,6 +1,6 @@
 Name: vbox
-Version: 1.1
-Release: alt7
+Version: 1.2
+Release: alt1
 
 Summary: Etersoft's scripts for testing in remote VirtualBox machines
 
@@ -104,6 +104,9 @@ cp -ar vbox-dhcpinfo/var/* %buildroot%_var/
 
 
 %changelog
+* Tue Oct 18 2011 Evgeny Sinelnikov <sin@altlinux.ru> 1.2-alt1
+- Add group machines support
+
 * Fri Mar 18 2011 Denis Baranov <baraka@altlinux.ru> 1.1-alt7
 - Add new adress dhcp-server
 
