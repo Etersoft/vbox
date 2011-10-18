@@ -87,6 +87,7 @@ cp -ar vbox-dhcpinfo/var/* %buildroot%_var/
 %config(noreplace) %_sysconfdir/vbox/vboxmachines.conf
 %config(noreplace) %_sysconfdir/vbox/vboxmachines.list
 %config(noreplace) %_sysconfdir/vbox/machines.d/*.list
+%config(noreplace) %_sysconfdir/vbox/machines.d/*.conf
 %config(noreplace) %_sysconfdir/vbox/scripts/vm*
 %config(noreplace) %_sysconfdir/vbox/scripts/*/vm*
 %config(noreplace) %_sysconfdir/vbox/scripts/*/group*

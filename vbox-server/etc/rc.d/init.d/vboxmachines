@@ -54,39 +54,50 @@ get_running_vms_uuids_list()
 ###
 start_vm_by_uuid()
 {
-	echo "Starting \""`get_vm_name_by_uuid "$1"`"\" - $1 ..."
-	su "$VBOX_USER" -l -c "VBoxManage --nologo startvm \"$1\" --type headless"
+	local vm_uuid="$1"
+	echo "Starting \""`get_vm_name_by_uuid "$vm_uuid"`"\" - $vm_uuid ..."
+	su "$VBOX_USER" -l -c "VBoxManage --nologo startvm \"$vm_uuid\" --type headless"
 }
 
 stop_vm_by_uuid()
 {
-	echo -n "Stopping \""`get_vm_name_by_uuid "$vm_uuid"`"\" - $vm_uuid "
-	su "$VBOX_USER" -l -c "VBoxManage --nologo controlvm \"$1\" \"$VBOX_SHUTDOWN_ACTION\""
+	local retcode=
+	local vm_uuid="$1"
+	local action="${2-$VBOX_SHUTDOWN_ACTION}"
+	local timeout="${3-$VBOX_SHUTDOWN_TIMEOUT}"
+	echo -n "Stopping \""`get_vm_name_by_uuid "$vm_uuid"`"\" - $vm_uuid: "
+	su "$VBOX_USER" -l -c "VBoxManage --nologo controlvm \"$vm_uuid\" \"$action\""
+	retcode="$?"
 
-	wait_count="0"
+	[ "$timeout" -ne "0" ] || return "$retcode"
+
+	local wait_count="0"
 	while [ ! -z `get_running_vms_uuids_list | grep "$vm_uuid"` ]; do
 		echo -n "."
 		sleep 1
 
 		let "wait_count+=1"
-		if [ $wait_count -gt "$VBOX_SHUTDOWN_TIMEOUT" ]; then
-			su "$VBOX_USER" -l -c "VBoxManage --nologo controlvm \"$1\" savestate"
+		if [ $wait_count -gt "$timeout" ]; then
+			echo -n "Save state due timed out: "
+			su "$VBOX_USER" -l -c "VBoxManage --nologo controlvm \"$vm_uuid\" savestate"
+			retcode="$?"
 			break
 		fi
 	done
 	[ "$wait_count" -ne "0" ] && echo
+	return "$retcode"
 }
 
 #####
 start_necessary_vms()
 {
 	local retcode="0"
-	local vm_group="$1"
+	local vm_group="$1"; shift
 	local script_dir="$VBOX_MACHINES_SCRIPTS_DIR"
 	[ -z "$vm_group" ] || script_dir="$VBOX_MACHINES_SCRIPTS_DIR/$vm_group"
 	get_necessary_vms_uuids_list "$vm_group" | while read vm_uuid; do
 		ExecIfExecutable "$script_dir/vmstart-pre" $vm_uuid "`get_vm_name_by_uuid "$vm_uuid"`"
-		start_vm_by_uuid "$vm_uuid"
+		start_vm_by_uuid "$vm_uuid" "$@"
 		if [ "$?" -ne "0" ]; then
 			retcode="1"
 		else
@@ -99,12 +110,12 @@ start_necessary_vms()
 stop_necessary_vms()
 {
 	local retcode="0"
-	local vm_group="$1"
+	local vm_group="$1"; shift
 	local script_dir="$VBOX_MACHINES_SCRIPTS_DIR"
 	[ -z "$vm_group" ] || script_dir="$VBOX_MACHINES_SCRIPTS_DIR/$vm_group"
 	get_necessary_vms_uuids_list "$vm_group" | while read vm_uuid; do
 		ExecIfExecutable "$script_dir/vmstop-pre" $vm_uuid "`get_vm_name_by_uuid "$vm_uuid"`"
-		stop_vm_by_uuid "$vm_uuid"
+		stop_vm_by_uuid "$vm_uuid" "$@"
 		if [ "$?" -ne "0" ]; then
 			retcode="1"
 		else
@@ -122,8 +133,9 @@ restart_necessary_vms()
 
 status_necessary_vms()
 {
+	local vm_group="$1"
 	running_vms_uuids_list=`get_running_vms_uuids_list`
-	necessary_vms_uuids_list=`get_necessary_vms_uuids_list "$@"`
+	necessary_vms_uuids_list=`get_necessary_vms_uuids_list "$vm_group"`
 
 	echo "$necessary_vms_uuids_list" | while read vm_uuid; do
 		if [ -z `echo "$running_vms_uuids_list" | grep "$vm_uuid"` ]; then
@@ -157,22 +169,71 @@ get_list_vms()
 }
 
 #####
+start_group()
+{
+	local retcode="0"
+	local vm_group="$1"
+	local script_dir="$VBOX_MACHINES_SCRIPTS_DIR/$vm_group"
+	echo "* Group '$vm_group':"
+	ExecIfExecutable "$script_dir/groupstart-pre" "$vm_group"
+	start_necessary_vms "$vm_group"
+	if [ "$?" -ne "0" ]; then
+		retcode="1"
+	else
+		ExecIfExecutable "$script_dir/groupstart-post" "$vm_group"
+	fi
+	return "$retcode"
+}
+
+stop_group()
+{
+	local retcode="0"
+	local vm_group="$1"
+	local script_dir="$VBOX_MACHINES_SCRIPTS_DIR/$vm_group"
+
+	local group_config="$VBOX_MACHINES_GROUPS_DIR/$vm_group.conf"
+	local default_shutdown_action="$VBOX_SHUTDOWN_ACTION"
+	local shutdown_action="$(unset VBOX_SHUTDOWN_ACTION &&
+	    [ -s "$group_config" ] && . "$group_config";
+	    printf %s "${VBOX_SHUTDOWN_ACTION-$default_shutdown_action}")"
+	local default_shutdown_timeout="$VBOX_SHUTDOWN_TIMEOUT"
+	local shutdown_timeout="$(unset VBOX_SHUTDOWN_TIMEOUT &&
+	    [ -s "$group_config" ] && . "$group_config";
+	    printf %s "${VBOX_SHUTDOWN_TIMEOUT-$default_shutdown_timeout}")"
+
+	echo "* Group '$vm_group':"
+	ExecIfExecutable "$script_dir/groupstop-pre" "$vm_group"
+	stop_necessary_vms "$vm_group" "$shutdown_action" "$shutdown_timeout"
+	if [ "$?" -ne "0" ]; then
+		retcode="2"
+	else
+		ExecIfExecutable "$script_dir/groupstop-post" "$vm_group"
+	fi
+	return "$retcode"
+}
+
+status_group()
+{
+	local vm_group="$1"
+	echo "* Group '$vm_group':"
+	status_necessary_vms "$vm_group"
+}
+
+
+#####
 start_vms()
 {
 	local retcode="0"
+	local vm_group="${1-}"
+	if [ -n "$vm_group" ]; then
+		start_group "$vm_group" || retcode="1"
+		return "$retcode"
+	fi
 	echo "* Global group:"
 	start_necessary_vms || retcode="1"
 	get_vm_groups_list | while read vm_group; do
-		local script_dir="$VBOX_MACHINES_SCRIPTS_DIR/$vm_group"
 		echo
-		echo "* Group '$vm_group':"
-		ExecIfExecutable "$script_dir/groupstart-pre" "$vm_group"
-		start_necessary_vms "$vm_group"
-		if [ "$?" -ne "0" ]; then
-			retcode="2"
-		else
-			ExecIfExecutable "$script_dir/groupstart-post" "$vm_group"
-		fi
+		start_group "$vm_group" || retcode="2"
 	done
 	return "$retcode"
 }
@@ -180,36 +241,39 @@ start_vms()
 stop_vms()
 {
 	local retcode="0"
+	local vm_group="${1-}"
+	if [ -n "$vm_group" ]; then
+		stop_group "$vm_group" || retcode="1"
+		return "$retcode"
+	fi
 	echo "* Global group:"
 	stop_necessary_vms || retcode="1"
 	get_vm_groups_list | while read vm_group; do
 		echo
-		echo "* Group '$vm_group':"
-		ExecIfExecutable "$script_dir/groupstop-pre" "$vm_group"
-		stop_necessary_vms "$vm_group"
-		if [ "$?" -ne "0" ]; then
-			retcode="2"
-		else
-			ExecIfExecutable "$script_dir/groupstop-post" "$vm_group"
-		fi
+		start_group "$vm_group" || retcode="2"
 	done
 	return "$retcode"
 }
 
 restart_vms()
 {
-	stop_vms
-	start_vms
+	local vm_group="${1-}"
+	stop_vms "$vm_group"
+	start_vms "$vm_group"
 }
 
 status_vms()
 {
+	local vm_group="${1-}"
+	if [ -n "$vm_group" ]; then
+		status_group "$vm_group"
+		return
+	fi
 	echo "* Global group:"
 	status_necessary_vms
 	get_vm_groups_list | while read vm_group; do
 		echo
-		echo "* Group '$vm_group':"
-		status_necessary_vms "$vm_group"
+		status_group "$vm_group"
 	done
 }
 
