@@ -49,6 +49,7 @@ mkdir -p %buildroot%_bindir/
 mkdir -p %buildroot%_sysconfdir/
 mkdir -p %buildroot%_initdir/
 mkdir -p %buildroot%_var/lib/vbox/
+mkdir -p %buildroot%_var/lib/vbox/machines.d/
 mkdir -p %buildroot%_var/lib/dhcpinfo/
 
 install -m755 vbox-client/bin/* %buildroot%_bindir/
@@ -80,6 +81,7 @@ cp -ar vbox-dhcpinfo/var/* %buildroot%_var/
 %_bindir/VBoxShared
 %attr(0400,root,root) %_sysconfdir/sudo.d/vbox
 %dir %_sysconfdir/vbox/
+%dir %_sysconfdir/vbox/machines.d/
 %config(noreplace) %_sysconfdir/vbox/vbox.conf
 %config(noreplace) %_sysconfdir/vbox/vbox.nxs
 %config(noreplace) %_sysconfdir/vbox/vboxmachines.conf

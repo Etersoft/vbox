@@ -35,7 +35,15 @@ get_vm_name_by_uuid()
 
 get_necessary_vms_uuids_list()
 {
-	su "$VBOX_USER" -l -c "cat \"$VBOX_MACHINES_LIST\"" | sed -e '/^#/d' | sed -e '/^$/d' | sort
+	local group="${1-}"
+	local list="$VBOX_MACHINES_LIST"
+	[ -z "$group" ] || list="$VBOX_MACHINES_GROUPS_DIR/$group.list"
+	cat "$list" | sed -e '/^#/d' | sed -e '/^$/d' | sort
+}
+
+get_vm_groups_list()
+{
+	find "$VBOX_MACHINES_GROUPS_DIR" -name '*.list' | sed -e 's/\([^\/]*\/\)*\(.*\)\.list$/\2/g'
 }
 
 get_running_vms_uuids_list()
@@ -73,7 +81,7 @@ stop_vm_by_uuid()
 start_necessary_vms()
 {
 	retcode="0"
-	get_necessary_vms_uuids_list | while read vm_uuid; do
+	get_necessary_vms_uuids_list "$@" | while read vm_uuid; do
 		start_vm_by_uuid "$vm_uuid"
 		[ "$?" -ne "0" ] && retcode="1"
 	done
@@ -83,7 +91,7 @@ start_necessary_vms()
 stop_necessary_vms()
 {
 	retcode="0"
-	get_necessary_vms_uuids_list | while read vm_uuid; do
+	get_necessary_vms_uuids_list "$@" | while read vm_uuid; do
 		stop_vm_by_uuid "$vm_uuid"
 		[ "$?" -ne "0" ] && retcode="1"
 	done
@@ -99,7 +107,7 @@ restart_necessary_vms()
 status_necessary_vms()
 {
 	running_vms_uuids_list=`get_running_vms_uuids_list`
-	necessary_vms_uuids_list=`get_necessary_vms_uuids_list`
+	necessary_vms_uuids_list=`get_necessary_vms_uuids_list "$@"`
 
 	echo "$necessary_vms_uuids_list" | while read vm_uuid; do
 		if [ -z `echo "$running_vms_uuids_list" | grep "$vm_uuid"` ]; then
@@ -132,13 +140,50 @@ get_list_vms()
 		done
 }
 
+#####
+start_vms()
+{
+	start_necessary_vms
+	get_vm_groups_list | while read vm_group; do
+		echo
+		echo "* Group: $vm_group" 
+		start_necessary_vms "$vm_group"
+	done
+}
+
+stop_vms()
+{
+	stop_necessary_vms
+	get_vm_groups_list | while read vm_group; do
+		echo
+		echo "* Group: $vm_group" 
+		stop_necessary_vms "$vm_group"
+	done
+}
+
+restart_vms()
+{
+	stop_vms
+	start_vms
+}
+
+status_vms()
+{
+	status_necessary_vms
+	get_vm_groups_list | while read vm_group; do
+		echo
+		echo "* Group: $vm_group" 
+		status_necessary_vms "$vm_group"
+	done
+}
+
 
 #####
 case "$1" in
-	"start") start_necessary_vms;;
-	"stop") stop_necessary_vms;;
-	"restart") restart_necessary_vms;;
-	"status") status_necessary_vms;;
+	"start") start_vms;;
+	"stop") stop_vms;;
+	"restart") restart_vms;;
+	"status") status_vms;;
 	"get_list") get_list_vms;;
 	*) msg_usage "${0##*/} {start|stop|restart|status}"
 	exit 1
