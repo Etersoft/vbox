@@ -1,6 +1,6 @@
 Name: vbox
 Version: 1.2
-Release: alt1
+Release: alt2
 
 Summary: Etersoft's scripts for testing in remote VirtualBox machines
 
@@ -82,6 +82,7 @@ cp -ar vbox-dhcpinfo/var/* %buildroot%_var/
 %dir %_sysconfdir/vbox/
 %dir %_sysconfdir/vbox/machines.d/
 %dir %_sysconfdir/vbox/scripts/
+%dir %_sysconfdir/vbox/scripts/groupmachines
 %config(noreplace) %_sysconfdir/vbox/vbox.conf
 %config(noreplace) %_sysconfdir/vbox/vbox.nxs
 %config(noreplace) %_sysconfdir/vbox/vboxmachines.conf
@@ -104,6 +105,10 @@ cp -ar vbox-dhcpinfo/var/* %buildroot%_var/
 
 
 %changelog
+* Thu Nov 10 2011 Evgeny Sinelnikov <sin@altlinux.ru> 1.2-alt2
+- Pack /etc/vbox/scripts/groupmachines directory due
+  sisyphus_check: subdirectories packaging violation
+
 * Tue Oct 18 2011 Evgeny Sinelnikov <sin@altlinux.ru> 1.2-alt1
 - Add group machines support
 
