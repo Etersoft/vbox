@@ -135,6 +135,7 @@ help()
 	echo -e "\t--sleep <VM>, sleep <VM> - Save state of <VM>"
 	echo -e "\t--restart <VM>, restart <VM> - Hot restart <VM>"
 	echo -e "\t--reset <VM>, reset <VM> - Hot reset <VM>"
+	echo -e "\t--snapshot <VM> <SSNAME>, snapshot <VM> <SSNAME> - Make snapshot of <VM> (UUID or name)"
 	echo -e "\t--info <VM>, info <VM> - Show info of <VM>"
 	echo -e "\t--status <VM>, status <VM> - Show state of <VM>"
 	echo
@@ -169,6 +170,7 @@ else
 		"--restart"|"restart") connect_over_ssh "VBoxManage --nologo controlvm \"$2\" poweroff; \
 			VBoxManage --nologo startvm \"$2\" --type headless";;
 		"--reset"|"reset") connect_over_ssh "VBoxManage --nologo controlvm \"$2\" reset";;
+		"--snapshot"|"snapshot") connect_over_ssh "VBoxManage --nologo snapshot \"$2\" take \"$3\"";;
 		"--info"|"info") connect_over_ssh "VBoxManage --nologo showvminfo \"$2\"";;
 		"--status"|"status") connect_over_ssh "VBoxManage --nologo showvminfo \"$2\" | grep State";;
 		*) connect_over_ssh "$@";;
