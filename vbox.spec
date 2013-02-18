@@ -2,7 +2,7 @@
 %define _sudoersdir %_sysconfdir/sudoers.d
 
 Name: vbox
-Version: 1.3
+Version: 1.4
 Release: alt1
 
 Summary: Etersoft's scripts for testing in remote VirtualBox machines
@@ -111,6 +111,9 @@ cp -ar vbox-dhcpinfo/var/* %buildroot%_var/
 
 
 %changelog
+* Mon Feb 18 2013 Vitaly Lipatov <lav@altlinux.ru> 1.4-alt1
+- added --snapshot to /bin/vbox
+
 * Mon Feb 18 2013 Vitaly Lipatov <lav@altlinux.ru> 1.3-alt1
 - pack sudoers file to /etc/sudoers.d via _sudoersdir macro (fix eterbug #9078)
 - use opennx by default
