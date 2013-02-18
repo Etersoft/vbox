@@ -25,6 +25,8 @@ Group: Communications
 %description client
 Client for remote virtualbox machines.
 
+Requires: opennx
+
 
 %package server
 Summary: Etersoft's scripts for testing in remote VirtualBox machines
