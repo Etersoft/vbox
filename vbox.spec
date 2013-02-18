@@ -1,3 +1,6 @@
+# since rpm-build-intro 1.7.25
+%define _sudoersdir %_sysconfdir/sudoers.d
+
 Name: vbox
 Version: 1.2
 Release: alt2
@@ -49,6 +52,7 @@ Special ssh user for issue dhcp information
 %install
 mkdir -p %buildroot%_bindir/
 mkdir -p %buildroot%_sysconfdir/
+mkdir -p %buildroot%_sudoersdir/
 mkdir -p %buildroot%_initdir/
 mkdir -p %buildroot%_var/lib/vbox/
 mkdir -p %buildroot%_var/lib/dhcpinfo/
@@ -58,7 +62,7 @@ install -m755 vbox-server/bin/* %buildroot%_bindir/
 install -m755 vbox-dhcpinfo/bin/* %buildroot%_bindir/
 
 install -m755 vbox-server/etc/rc.d/init.d/vboxmachines %buildroot%_initdir/
-cp -ar vbox-server/etc/sudo.d %buildroot%_sysconfdir/
+cp -ar vbox-server/etc/sudoers.d/* %buildroot%_sudoersdir/
 cp -ar vbox-server/etc/vbox %buildroot%_sysconfdir/
 cp -ar vbox-dhcpinfo/etc/* %buildroot%_sysconfdir/
 cp -ar vbox-dhcpinfo/var/* %buildroot%_var/
@@ -80,7 +84,7 @@ cp -ar vbox-dhcpinfo/var/* %buildroot%_var/
 
 %files server
 %_bindir/VBoxShared
-%attr(0400,root,root) %_sysconfdir/sudo.d/vbox
+%attr(0400,root,root) %_sudoersdir/vbox
 %dir %_sysconfdir/vbox/
 %dir %_sysconfdir/vbox/machines.d/
 %dir %_sysconfdir/vbox/scripts/
