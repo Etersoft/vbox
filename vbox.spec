@@ -2,8 +2,8 @@
 %define _sudoersdir %_sysconfdir/sudoers.d
 
 Name: vbox
-Version: 1.2
-Release: alt2
+Version: 1.3
+Release: alt1
 
 Summary: Etersoft's scripts for testing in remote VirtualBox machines
 
@@ -111,6 +111,10 @@ cp -ar vbox-dhcpinfo/var/* %buildroot%_var/
 
 
 %changelog
+* Mon Feb 18 2013 Vitaly Lipatov <lav@altlinux.ru> 1.3-alt1
+- pack sudoers file to /etc/sudoers.d via _sudoersdir macro (fix eterbug #9078)
+- use opennx by default
+
 * Thu Nov 10 2011 Evgeny Sinelnikov <sin@altlinux.ru> 1.2-alt2
 - Pack /etc/vbox/scripts/groupmachines directory due
   sisyphus_check: subdirectories packaging violation
