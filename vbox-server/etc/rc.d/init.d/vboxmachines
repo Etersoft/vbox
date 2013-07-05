@@ -137,6 +137,7 @@ status_necessary_vms()
 	running_vms_uuids_list=`get_running_vms_uuids_list`
 	necessary_vms_uuids_list=`get_necessary_vms_uuids_list "$vm_group"`
 
+	if [ -n "$necessary_vms_uuids_list" ]; then
 	echo "$necessary_vms_uuids_list" | while read vm_uuid; do
 		if [ -z `echo "$running_vms_uuids_list" | grep "$vm_uuid"` ]; then
 			echo "[   ---   ] :: \""`get_vm_name_by_uuid "$vm_uuid"`"\" - $vm_uuid"
@@ -144,6 +145,9 @@ status_necessary_vms()
 			echo "[ RUNNING ] :: \""`get_vm_name_by_uuid "$vm_uuid"`"\" - $vm_uuid"
 		fi
 	done
+	else
+	    echo "The machine list is empty....."
+	fi
 }
 
 get_list_vms()
