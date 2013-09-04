@@ -236,6 +236,12 @@ start_vms()
 	echo "* Global group:"
 	start_necessary_vms || retcode="1"
 	get_vm_groups_list | while read vm_group; do
+		local group_config="$VBOX_MACHINES_GROUPS_DIR/$vm_group.conf"
+		local default_start_group_flag="$VBOX_GROUP_GLOBAL_START"
+		local start_group_flag="$(unset VBOX_GROUP_GLOBAL_START &&
+		    [ -s "$group_config" ] && . "$group_config";
+		    printf %s "${VBOX_GROUP_GLOBAL_START-$default_start_group_flag}")"
+		[ -n "$start_group_flag" -a "$start_group_flag" != 0 ] || continue
 		echo
 		start_group "$vm_group" || retcode="2"
 	done
@@ -253,6 +259,12 @@ stop_vms()
 	echo "* Global group:"
 	stop_necessary_vms || retcode="1"
 	get_vm_groups_list | while read vm_group; do
+		local group_config="$VBOX_MACHINES_GROUPS_DIR/$vm_group.conf"
+		local default_start_group_flag="$VBOX_GROUP_GLOBAL_START"
+		local start_group_flag="$(unset VBOX_GROUP_GLOBAL_START &&
+		    [ -s "$group_config" ] && . "$group_config";
+		    printf %s "${VBOX_GROUP_GLOBAL_START-$default_start_group_flag}")"
+		[ -n "$start_group_flag" -a "$start_group_flag" != 0 ] || continue
 		echo
 		start_group "$vm_group" || retcode="2"
 	done
