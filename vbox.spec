@@ -2,7 +2,7 @@
 %define _sudoersdir %_sysconfdir/sudoers.d
 
 Name: vbox
-Version: 1.4
+Version: 1.5
 Release: alt1
 
 Summary: Etersoft's scripts for testing in remote VirtualBox machines
@@ -86,22 +86,22 @@ cp -ar vbox-dhcpinfo/var/* %buildroot%_var/
 %_bindir/VBoxShared
 %attr(0400,root,root) %_sudoersdir/vbox
 %dir %_sysconfdir/vbox/
-%dir %_sysconfdir/vbox/machines.d/
+%dir %_sysconfdir/vbox/vboxmachines.d/
 %dir %_sysconfdir/vbox/scripts/
 %dir %_sysconfdir/vbox/scripts/groupmachines
 %config(noreplace) %_sysconfdir/vbox/vbox.conf
 %config(noreplace) %_sysconfdir/vbox/vbox.nxs
 %config(noreplace) %_sysconfdir/vbox/vboxmachines.conf
 %config(noreplace) %_sysconfdir/vbox/vboxmachines.list
-%config(noreplace) %_sysconfdir/vbox/machines.d/*.list
-%config(noreplace) %_sysconfdir/vbox/machines.d/*.conf
+%config(noreplace) %_sysconfdir/vbox/vboxmachines.d/*.list
+%config(noreplace) %_sysconfdir/vbox/vboxmachines.d/*.conf
 %config(noreplace) %_sysconfdir/vbox/scripts/vm*
 %config(noreplace) %_sysconfdir/vbox/scripts/*/vm*
 %config(noreplace) %_sysconfdir/vbox/scripts/*/group*
 %attr(0600,vboxuser,vboxusers) %_sysconfdir/vbox/dhcpinfo.key
 %_initdir/vboxmachines
 %dir /var/lib/vbox/
-%attr(0700,vboxuser,vboxuser) /var/lib/vbox/
+%attr(0700,vboxuser,vboxusers) /var/lib/vbox/
 
 
 %files dhcpinfo
@@ -111,6 +111,10 @@ cp -ar vbox-dhcpinfo/var/* %buildroot%_var/
 
 
 %changelog
+* Wed Sep 04 2013 Evgeny Sinelnikov <sin@altlinux.ru> 1.5-alt1
+- Add VBOX_GROUP_GLOBAL_START flag for choice of VM start at service startup
+- Empty machine lists are treated without errors while status command now
+
 * Mon Feb 18 2013 Vitaly Lipatov <lav@altlinux.ru> 1.4-alt1
 - added --snapshot to /bin/vbox
 
