@@ -1,9 +1,6 @@
-# since rpm-build-intro 1.7.25
-%define _sudoersdir %_sysconfdir/sudoers.d
-
 Name: vbox
 Version: 1.6
-Release: alt1
+Release: alt2
 
 Summary: Etersoft's scripts for testing in remote VirtualBox machines
 
@@ -11,9 +8,7 @@ License: GPL
 Group: Communications
 Url: http://wiki.office.etersoft.ru/testing/virtualbox
 
-Packager: Devaev Maxim <mdevaev@etersoft.ru>
-
-#Git: http://git.etersoft.ru/people/mdevaev/packages/vbox.git
+# Source-git: https://github.com/Etersoft/vbox.git
 Source: %name-%version.tar
 
 BuildArch: noarch
@@ -47,7 +42,6 @@ Special ssh user for issue dhcp information
 
 %prep
 %setup
-
 
 %install
 mkdir -p %buildroot%_bindir/
@@ -111,12 +105,16 @@ cp -ar vbox-dhcpinfo/var/* %buildroot%_var/
 
 
 %changelog
+* Sat Nov 18 2017 Vitaly Lipatov <lav@altlinux.ru> 1.6-alt2
+- cleanup spec, fix build
+
 * Sat Nov 18 2017 Vitaly Lipatov <lav@altlinux.ru> 1.6-alt1
 - vbox: add --autologin
 
 * Wed Sep 04 2013 Evgeny Sinelnikov <sin@altlinux.ru> 1.5-alt1
-- Add VBOX_GROUP_GLOBAL_START flag for choice of VM start at service startup
-- Empty machine lists are treated without errors while status command now
+- add VBOX_GROUP_GLOBAL_START flag for choice of VM start at service startup
+- empty machine lists are treated without errors while status command now
+- rename /etc/vbox/machines.d to /etc/vbox/vboxmachines.d
 
 * Mon Feb 18 2013 Vitaly Lipatov <lav@altlinux.ru> 1.4-alt1
 - added --snapshot to /bin/vbox
