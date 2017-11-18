@@ -111,7 +111,7 @@ connect_over_nx()
 
 	local nxclient_config="$HOME/.nx/config/"`basename "$VBOX_NXCLIENT_CONFIG"`
 
-	"$nxclient" --session "$nxclient_config"
+	"$nxclient" --autologin --session "$nxclient_config"
 }
 
 
