@@ -2,7 +2,7 @@
 %define _sudoersdir %_sysconfdir/sudoers.d
 
 Name: vbox
-Version: 1.5
+Version: 1.6
 Release: alt1
 
 Summary: Etersoft's scripts for testing in remote VirtualBox machines
@@ -111,6 +111,9 @@ cp -ar vbox-dhcpinfo/var/* %buildroot%_var/
 
 
 %changelog
+* Sat Nov 18 2017 Vitaly Lipatov <lav@altlinux.ru> 1.6-alt1
+- vbox: add --autologin
+
 * Wed Sep 04 2013 Evgeny Sinelnikov <sin@altlinux.ru> 1.5-alt1
 - Add VBOX_GROUP_GLOBAL_START flag for choice of VM start at service startup
 - Empty machine lists are treated without errors while status command now
