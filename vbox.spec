@@ -1,6 +1,6 @@
 Name: vbox
 Version: 1.6
-Release: alt2
+Release: alt3
 
 Summary: Etersoft's scripts for testing in remote VirtualBox machines
 
@@ -105,6 +105,9 @@ cp -ar vbox-dhcpinfo/var/* %buildroot%_var/
 
 
 %changelog
+* Wed Nov 22 2017 Vitaly Lipatov <lav@altlinux.ru> 1.6-alt3
+- vbox.conf: set rxclient by default (eterbug #11611)
+
 * Sat Nov 18 2017 Vitaly Lipatov <lav@altlinux.ru> 1.6-alt2
 - cleanup spec, fix build
 
